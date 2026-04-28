@@ -1,0 +1,8 @@
+{
+		"db":{
+				"server":"HOST_IP",
+				"username":"USER_NAME",
+				"password":"USER_PASSWORD",
+				"database":"DATABASE"	
+			}
+	}

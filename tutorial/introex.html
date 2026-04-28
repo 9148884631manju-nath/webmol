@@ -1,0 +1,47 @@
+<section id="intro" class="mb-16">
+                    <h2 class="text-4xl font-black text-orchid-900 mb-6 tracking-tight">Introduction</h2>
+                    <p class="text-lg text-slate-600 leading-relaxed mb-8">
+                        Welcome to the WEBMOL tutorial. This guide will walk you through building your first molecular application using PHP Core.
+                    </p>
+                    
+                    <div class="bg-orchid-50 border-l-4 border-orchid-500 p-6 rounded-r-2xl mb-10">
+                        <p class="text-orchid-900 text-sm font-semibold">
+                            "The best software is built one molecule at a time."
+                        </p>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-orchid-900 mb-4">First Request Handling</h3>
+                    <p class="text-slate-500 mb-6 text-sm">Defining a simple route within the WEBMOL kernel.</p>
+                    
+                    <div class="relative group">
+                        <div class="absolute right-4 top-4 text-[10px] font-mono text-orchid-300 uppercase select-none">PHP</div>
+                        <pre class="font-mono shadow-2xl">
+<span class="code-keyword">&lt;?php</span>
+
+<span class="code-keyword">use</span> Webmol\Core\Router;
+
+<span class="text-orchid-400">// Initialize the Route Molecule</span>
+$app = <span class="code-keyword">new</span> Router();
+
+$app->get(<span class="code-string">'/hello'</span>, <span class="code-keyword">function</span>() {
+    <span class="code-keyword">return</span> <span class="code-string">"Welcome to the Molecular Web."</span>;
+});
+
+$app->dispatch();</pre>
+                    </div>
+                </section>
+
+                <section id="installation" class="mb-16 pt-16 border-t border-orchid-100">
+                    <h2 class="text-3xl font-bold text-orchid-900 mb-6">Directory Structure</h2>
+                    <p class="text-slate-500 mb-8">WEBMOL stays lightweight by keeping the structure flat and logical.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 border border-orchid-100 rounded-xl hover:bg-orchid-50 transition-colors">
+                            <span class="font-mono text-xs text-orchid-600 block mb-1">/app/Molecules</span>
+                            <p class="text-xs text-slate-400">Core logic and functional modules.</p>
+                        </div>
+                        <div class="p-4 border border-orchid-100 rounded-xl hover:bg-orchid-50 transition-colors">
+                            <span class="font-mono text-xs text-orchid-600 block mb-1">/public/index.php</span>
+                            <p class="text-xs text-slate-400">The primary entry point for all requests.</p>
+                        </div>
+                    </div>
+                </section>
