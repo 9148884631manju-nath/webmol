@@ -1,0 +1,8 @@
+# Force GitHub to recognize the project as PHP (Fixes "Hack" detection)
+*.php linguist-language=php
+
+# Ensure HTML templates are categorized correctly
+*.html linguist-language=html
+
+# Treat the library core as PHP
+lib/webmodule.php linguist-language=php
