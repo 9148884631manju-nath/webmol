@@ -96,6 +96,89 @@ class WebMol{
 		  }
 		return $output;
 	}
+  public function library($t,$f){
+    $res="";
+    if(file_exists($f)){
+      $data = file_get_contents($f);
+      $jsd = json_decode($data);
+      if(isset($jsd->$t) and is_array($jsd->$t)){
+        $els=$jsd->$t;
+        for($i=0;$i<count($els);$i+=1)
+          {
+            $vls[$i]=""; $vlsx[$i]="";
+            $myd=$els[$i];
+            $typ = $myd->type;
+            $dat = $myd->data;            
+            switch($typ){
+              case "script":
+                for($j=0;$j<count($dat);$j+=1)
+                {              
+                  foreach($dat[$j] as $k=>$v){
+                    $vls[$i]=$k.'="'.$v.'" ';
+                  }                  
+                  $res.='<script '.$vls[$i].' ></script> ';
+                }
+                break;
+              case "inscript":
+                for($j=0;$j<count($dat);$j+=1)
+                {              
+                  foreach($dat[$j] as $k=>$v){
+                    $vlsx[$i].=file_get_contents($v);
+                  }                  
+                  $res.='<script>'.$vlsx[$i].'</script> ';
+                }
+                break;
+              case "link":
+                for($j=0;$j<count($dat);$j+=1)
+                {              
+                  foreach($dat[$j] as $k=>$v){
+                    $vls[$i]=$k.'="'.$v.'" ';
+                  }                  
+                  $res.='<link '.$vls[$i].' /> ';
+                }                
+                break;
+              default: break;
+            }
+          }
+      }else{}
+    }else{}
+    return $res;
+  }
+  public function seo($t,$f){
+    $res="";
+    if(file_exists($f)){
+      $data = file_get_contents($f);
+      $jsd = json_decode($data);
+      if(isset($jsd->title->$t)){
+        $res.="<title>".$jsd->title->$t."</title> ";
+      }else{}
+      if(isset($jsd->meta->$t)){
+        $meta = $jsd->meta->$t;
+        for($i=0;$i<count($meta);$i+=1)
+          {
+            $mts[$i]="";
+            foreach($meta[$i] as $k=>$v){
+              $mts[$i].=$k.'="'.$v.'" ';
+            }
+            $res.="<meta ".$mts[$i]." /> ";
+          }
+      }else{}
+      if(isset($jsd->link->$t)){
+        $link = $jsd->link->$t;
+        for($i=0;$i<count($link);$i+=1)
+          {
+            $mts[$i]="";
+            foreach($link[$i] as $k=>$v){
+              $mts[$i].=$k.'="'.$v.'" ';
+            }
+            $res.="<link ".$mts[$i]." /> ";
+          }
+      }else{}
+    }else{
+      $res="";
+    }
+    return $res;
+  }
  public function strvalid($str)
 	{$ar=array();
 		$str=trim($str);
