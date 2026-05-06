@@ -224,6 +224,7 @@ class WebMol{
  }
  public function dataArray($data,$keys,$thm){
   $res="";
+  if(file_exists($thm)){
   $thm = file_get_contents($thm);
   $col=array();$dat=array();$var=array();$def=array();$ext=array();
   for($i=0;$i<count($keys);$i+=1){
@@ -253,6 +254,9 @@ class WebMol{
 
       }
       $res.=str_replace($var,$nval[$i],$thm);
+    }
+    }else{
+      $res= "Theme Not Found ".$thm;
     }
   return $res;
  }
