@@ -46,7 +46,13 @@ class WebMol{
         $res.=$nfilename.$delim;
       }
     }
-  }
+    $dc = strlen($delim);
+    $res = substr($res,0,-$dc);
+;  }
+  else
+    {
+      $res="No Files";
+    }
   return $res;
  }
  public function form($con,$fields,$fld,$i,$attrs)
@@ -319,6 +325,19 @@ class WebMol{
     }
   return $res;
  }
+ public function imageType($v)
+ {
+    $res="";
+    $pinfo = pathinfo($v);
+    $fmt = array("jpg","jpeg","bmp","tiff","png");
+    if(in_array($pinfo["extension"],$fmt)){
+      $res='<img src="'.$v.'" alt="'.$v.'" longdesc="'.$v.'" />';
+    }
+    else{
+      $res='<img src="icons/'.$pinfo["extension"].'.png" alt="'.$v.'" longdesc="'.$v.'" /> <a href="'.$v.'">'.$pinfo["filename"].'</a>';
+    }
+    return $res;
+ }
  public function validstr($ty,$vl,$de,$ex){
   $res="";
   $vl=($vl=="") ? $de : $vl;
@@ -329,6 +348,17 @@ class WebMol{
       break;
     case "dec":
       $res=$this->encdec("d",$vl,$ex);
+      break;
+    case "bulkimages":
+      $es = explode($de,$vl); 
+      if(is_array($es)){
+        for($u=0;$u<count($es);$u+=1)
+          {
+            $res.=$this->imageType($es[$u]);
+          }
+      }else{
+        $res = $vl;
+      }
       break;
     case "txt":
       $res=$vl;
