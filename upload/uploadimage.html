@@ -1,0 +1,97 @@
+<div class="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-slate-200 p-10 border border-white">
+        
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">XformTitle</h2>
+            <p class="text-slate-500 text-sm">XformDescprtion</p>
+        </div>
+
+        <form id="upload-form" 
+              hx-encoding="multipart/form-data" 
+                hx-post="XformUrl" 
+              hx-target="#xauth-card" 
+              hx-swap="innerHTML"
+              hx-indicator="#progress-bar"
+              class="space-y-6 XformClass"
+              name="XformName">
+            
+            <div id="drop-area" 
+                 class="relative border-2 border-dashed border-slate-200 rounded-3xl p-12 flex flex-col items-center justify-center hover:border-blue-500 hover:bg-blue-50/30 transition-all cursor-pointer group"
+                 onclick="document.getElementById('file-input').click()">
+                
+                
+
+                XformFields
+
+                
+
+            <button type="submit" 
+                    class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 active:scale-[0.98] transition shadow-xl shadow-slate-200 flex items-center justify-center gap-2">
+                <span>XbtnText</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </button>
+        </form>
+
+        <div id="progress-container" class="mt-4  ">
+                <div id="xauth-card">XformError</div>
+            <div class="flex justify-between mb-1">
+                <span class="text-xs font-medium text-blue-700">Uploading...</span>
+                <span id="progress-text" class="text-xs font-medium text-blue-700">0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-1.5">
+                <div id="progress-bar" class="bg-blue-600 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Preview handling
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                const list = document.getElementById('file-list');
+                const nameText = document.getElementById('file-name');
+                const sizeText = document.getElementById('file-size');
+                const extBox = document.getElementById('file-ext');
+
+                list.classList.remove('hidden');
+                nameText.innerText = file.name;
+                sizeText.innerText = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+                
+                // Get extension for the icon
+                const ext = file.name.split('.').pop().toUpperCase();
+                extBox.innerText = ext;
+
+                // Change drag-drop text
+                document.getElementById('file-label').innerText = "File selected!";
+            }
+        }
+
+        // HTMX Progress listener
+        htmx.on('#upload-form', 'htmx:xhr:progress', function(evt) {
+            const container = document.getElementById('progress-container');
+            const bar = document.getElementById('progress-bar');
+            const text = document.getElementById('progress-text');
+
+            container.classList.remove('hidden');
+            if (evt.detail.lengthComputable) {
+                let percent = Math.round((evt.detail.loaded / evt.detail.total) * 100);
+                bar.style.width = percent + '%';
+                text.innerText = percent + '%';
+            }
+        });
+
+        // Simple Drag and Drop visual toggle
+        const dropArea = document.getElementById('drop-area');
+        ['dragenter', 'dragover'].forEach(name => {
+            dropArea.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropArea.classList.add('border-blue-500', 'bg-blue-50/50');
+            });
+        });
+        ['dragleave', 'drop'].forEach(name => {
+            dropArea.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropArea.classList.remove('border-blue-500', 'bg-blue-50/50');
+            });
+        });
+    </script>

@@ -1,0 +1,13 @@
+{
+ "title":{
+  "home":"Welcome to WEBMOL Library"
+ },
+ "meta":{ 
+  "home":[
+   {
+    "name":"viewport",
+    "content":"width=device-width, initial-scale=1.0"
+   }
+  ]
+ }
+}

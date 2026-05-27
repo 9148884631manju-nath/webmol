@@ -1,0 +1,35 @@
+
+<div class="w-full max-w-2xl p-8 bg-white border border-gray-400 shadow-sm font-sans">
+
+<div class="flex justify-between items-end mb-1">
+    <!-- Label Section -->
+    <div class="text-xl">
+        <span>Xtitle </span>
+        <span class="font-bold text-black">Xscore</span>
+    </div>
+    
+    <!-- Percentage Label -->
+    <div class="text-xl text-gray-800">
+        Xpercent %
+    </div>
+</div>
+
+<!-- Progress Bar Background -->
+<div class="w-full bg-transparent h-1.5 relative">
+    <!-- Animated Progress Line (Magenta/Pink) -->
+    <div class="bg-[#e600e6] h-full animate-progressXanim rounded-full"></div>
+    
+    <!-- Optional: Full length background line if you want a 'track' -->
+    <div class="absolute top-0 left-0 w-full h-full bg-gray-100 -z-10 rounded-full" ></div>
+</div>
+<style>
+/* Custom animation for the progress width */
+@keyframes growXanim {
+    from { width: 0%; }
+    to { width: Xpercent%; }
+}
+.animate-progressXanim {
+    animation: growXanim 1.5s ease-out forwards;
+}
+</style>
+</div>

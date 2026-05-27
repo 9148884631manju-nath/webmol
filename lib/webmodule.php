@@ -11,7 +11,16 @@ class WebMol{
  public function page($p){
   if(file_exists($p)){$p=$p;}else{$p="error.php";}
   $wm = new WebMol($this->type,$this->dbfile,$this->database);
-  require_once $p;
+  if(file_exists($p)){
+    require_once $p;
+  }else{
+   echo $this->html(
+    [
+      ["txt"," Page Under Construction","Xerror","",""]
+    ],
+    "error.html"
+  );
+  }
  }
  public function getKeys($ar,$v){
   $res=array();
@@ -26,6 +35,56 @@ class WebMol{
   }else{}
   //var_dump($res);
   return $res;
+ }
+ public function uploadImages($imgName,$dir,$delim){
+  $res="";
+  if(isset($_POST["image_title"])){
+    $image = $_FILES[$imgName]["name"];
+    for($i=0;$i<count($image);$i+=1){
+      $nfilename=$dir.$image[$i];
+      if(move_uploaded_file($_FILES[$imgName]["tmp_name"][$i],$nfilename)){
+        $res.=$nfilename.$delim;
+      }
+    }
+  }
+  return $res;
+ }
+ public function form($con,$fields,$fld,$i,$attrs)
+ {
+  $inps="";
+  switch($fields[$fld[$i]]['type']){
+    case "select_options":
+      $dbt = $fields[$fld[$i]]['data'];
+      $ex = explode("|",$dbt);$optx="";
+      for($x=0;$x<count($ex);$x+=1){
+          $el = explode(",",$ex[$x]);
+          $optx.='<option value="'.$el[0].'">'.$el[1].'</option>';
+        }
+      $inps='<select '.$attrs.'>'.$optx.'</select>';
+    break;
+    case "from_db":
+      $dbt = $fields[$fld[$i]]['data'];
+      $ex = explode("|",$dbt);$ald=array();
+      $tab = $ex[0];
+      $col = explode(",",$ex[1]);
+      $gdat = mysqli_query($con,"SELECT ".$ex[1]." FROM ".$tab.$ex[2]);
+      $opt="";
+      if($gdat->num_rows>0){
+        while($dx=mysqli_fetch_assoc($gdat)){
+          $ald[]=$dx;
+        }
+        for($x=0;$x<count($ald);$x+=1){
+          $opt.='<option value="'.$ald[$x][$col[0]].'">'.$ald[$x][$col[1]].'</option>';
+        }
+        //var_dump($ald);
+      }else{}
+      $inps='<select '.$attrs.'>'.$opt.'</select>';
+      break;
+    default:
+      $inps='<input '.$attrs.' /> ';
+    break;
+  }
+  return $inps;
  }
  public function dataValidation($form,$colex,$data){
   $vx=$form[$colex]["validation"];
@@ -409,7 +468,7 @@ class WebMol{
         $errthm = file_get_contents($errthm);
         $readTheme = file_get_contents($sucthm);
         $table=$this->table['table'];
-
+        $con=$this->parent->con();
         if(count($data)<1){
           return str_replace("Xerror",$record_err,$errthm);
         }else{
@@ -422,7 +481,7 @@ class WebMol{
               //var_dump($data);
               $c_query = "DESCRIBE ".$table;
                try{
-                $cres = mysqli_query($this->parent->con(),$c_query);
+                $cres = mysqli_query($con,$c_query);
                 if(isset($cres->num_rows)>0){
                   $ecol=array();
                   while($row = mysqli_fetch_assoc($cres)){
@@ -452,9 +511,11 @@ class WebMol{
                             }
                           }
                         }
+                        $inps = $this->parent->form($con,$fields,$fld,$i,$attrs);
+
                         if(isset($fields[$fld[$i]]['titlecss'])){$titlecss=$fields[$fld[$i]]['titlecss'];}else{$titlecss="";}
                         if(isset($fields[$fld[$i]]['parentcss'])){$parentcss=$fields[$fld[$i]]['parentcss'];}else{$parentcss="";}
-                        $xfld.='<p class="'.$parentcss.'"><b class="'.$titlecss.'">'.$fields[$fld[$i]]['title'].'</b><input '.$attrs.'" /> </p>';
+                        $xfld.='<p class="'.$parentcss.'"><b class="'.$titlecss.'">'.$fields[$fld[$i]]['title'].'</b> '.$inps.' </p>';
                       }
                       $nvals[]=$xfld;
                     }else{
@@ -519,46 +580,20 @@ class WebMol{
                       $attrx.=$fk.'="'.$fv.'" ';  
                       }
                     }else{
+                      if(is_array($fv)){$fv=implode(",",$fv);}
                       $attrx.=$fk.'="'.$fv.'" ';
                     }
                   }                  
                 }                
                 $attrs=$attrx;
-                switch($fields[$fld[$i]]['type']){
-                  case "select_options":
-                    $dbt = $fields[$fld[$i]]['data'];
-                    $ex = explode("|",$dbt);$optx="";
-                    for($x=0;$x<count($ex);$x+=1){
-                        $el = explode(",",$ex[$x]);
-                        $optx.='<option value="'.$el[0].'">'.$el[1].'</option>';
-                      }
-                    $inps='<select '.$attrs.'>'.$optx.'</select>';
-                  break;
-                  case "from_db":
-                    $dbt = $fields[$fld[$i]]['data'];
-                    $ex = explode("|",$dbt);$ald=array();
-                    $tab = $ex[0];
-                    $col = explode(",",$ex[1]);
-                    $gdat = mysqli_query($con,"SELECT ".$ex[1]." FROM ".$tab.$ex[2]);
-                    $opt="";
-                    if($gdat->num_rows>0){
-                      while($dx=mysqli_fetch_assoc($gdat)){
-                        $ald[]=$dx;
-                      }
-                      for($x=0;$x<count($ald);$x+=1){
-                        $opt.='<option value="'.$ald[$x][$col[0]].'">'.$ald[$x][$col[1]].'</option>';
-                      }
-                      //var_dump($ald);
-                    }else{}
-                    $inps='<select '.$attrs.'>'.$opt.'</select>';
-                    break;
-                  default:
-                    $inps='<input '.$attrs.' /> ';
-                  break;
-                }
+                
+                $inps = $this->parent->form($con,$fields,$fld,$i,$attrs);
+
                 if(isset($fields[$fld[$i]]['titlecss'])){$titlecss=$fields[$fld[$i]]['titlecss'];}else{$titlecss="";}
                 if(isset($fields[$fld[$i]]['parentcss'])){$parentcss=$fields[$fld[$i]]['parentcss'];}else{$parentcss="";}
-                $xfld.='<p class="'.$parentcss.'" ><b class="'.$titlecss.'" >'.$fields[$fld[$i]]['title'].'</b>'.$inps.'<i class="flderr '.$fields[$fld[$i]]['name'].'_ierr">'.$fields[$fld[$i]]['error'].'</i></p>';
+                if(isset($fields[$fld[$i]]['titlecss'])){$titlecss=$fields[$fld[$i]]['titlecss'];}else{$titlecss="";}
+                if(isset($fields[$fld[$i]]['errorcss'])){$errorcss=$fields[$fld[$i]]['errorcss'];}else{$errorcss="";}
+                $xfld.='<p class="'.$parentcss.'" ><b class="'.$titlecss.'" >'.$fields[$fld[$i]]['title'].'</b>'.$inps.'<i class="flderr '.$errorcss.' '.$fields[$fld[$i]]['name'].'_ierr">'.$fields[$fld[$i]]['error'].'</i></p>';
                 }else{}
               }
               $nvals[]=$xfld;
@@ -569,7 +604,7 @@ class WebMol{
             
           }
           $nthm = str_replace($nvars,$nvals,$readTheme);
-          return str_replace($custvars,$custdata,$nthm);          
+          return str_replace($custvars,$custdata,$nthm);
         }
        }
         catch(\Exception $ex){
@@ -684,7 +719,7 @@ class WebMol{
       $con=$this->parent->con();
       return mysqli_real_escape_string($con,$v);
    }
-   public function checkAndInsert($checks,$err,$suc,$cols,$form){
+   public function checkAndInsert($checks,$err,$suc,$cols,$form,$for){
      $rex="";
      
      $data = $this->parent->getKeys($cols,2);
@@ -695,20 +730,24 @@ class WebMol{
       foreach($checks as $kk=>$vv){ if($kk=="fields"){$ccks=$vv;} else{$cxs.=$kk."=".$vv."";}}
      $checks = "SELECT ".$ccks." FROM ".$table['table']." WHERE ".$cxs;
      //var_dump($checks);
+     try{       
+     $runq = mysqli_query($con,$checks);
      try{
-       $runq = mysqli_query($con,$checks);
-       $runf = mysqli_fetch_assoc($runq);
-       if(is_array($runf)){
-         return $err;
-       }else{
-         if($checks==$err){
-          return $checks;
-         }else{
-            //var_dump($data);
-           return $this->insertData($cols,$data,$form);
-         }
-       }
-       //return var_dump($runf);
+        $runf = mysqli_fetch_assoc($runq);
+        if(is_array($runf)){
+          return $err;
+        }else{
+          if($checks==$err){
+            return $checks;
+          }else{
+              //var_dump($data);
+            return $this->insertData($cols,$data,$form,$for);
+          }
+        }
+        //return var_dump($runf);
+     }catch(\Exception $ex){
+        return $ex->getMessage()." ".$checks;
+     } 
 
      }catch(\Exception $ex){
       return $ex->getMessage()." ".$checks;
@@ -764,7 +803,7 @@ class WebMol{
             return "Check Posted Data In Fields <style>".$cs."</style>";
         }
    }
-   public function insertData($cols,$data,$form){
+   public function insertData($cols,$data,$form,$cfor){
     $rex="";$dxa="";$vls="";$cs="";
     $table=$this->table;
     $colex = explode(",",$cols);
@@ -802,13 +841,18 @@ class WebMol{
     {
      $vals="VALUES(".$data.")";
     }
-      $rex="INSERT INTO ".$table['table']."(".$cols.") ".$vals;
+      $xrex="INSERT INTO ".$table['table']."(".$cols.") ".$vals;
       if($ver==""){
         try{
-          $rex = mysqli_query($con,$rex);
+          $rex = mysqli_query($con,$xrex);
           return  "Inserted";
         }catch(\Exception $ex){
-          return $ex->getMessage();
+          if($cfor=="yes"){
+            return $ex->getMessage()."<hr/>".$xrex;
+          }else{
+            return $ex->getMessage();
+          }
+          
         }
       }else{
         return "Check Data Entered in Fields <style>".$cs."</style>";

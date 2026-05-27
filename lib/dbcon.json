@@ -1,5 +1,13 @@
 {
 		"newdb":{
+				"db":"mysqli",
+				"server":"127.0.0.1",
+				"username":"root",
+				"password":"srushti!@#123",
+				"database":"newdb"	
+			},
+		"newdb2":{
+				"db":"postgre",
 				"server":"127.0.0.1",
 				"username":"root",
 				"password":"srushti!@#123",
