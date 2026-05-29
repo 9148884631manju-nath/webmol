@@ -7,8 +7,9 @@ if(isset($_REQUEST['page'])){$page=$_REQUEST['page'];}else{$page="";}
 
 $lib ="";
 switch($page){
- case "graph": $fle="graph/score.php"; break;
- case "upload_image": $fle= "upload/imageupload.php"; break;
+ case "contacts":
+  $fle= "contacts/login.php"; 
+  break;
  default: 
   $fle= "Welcome.php"; 
  break;

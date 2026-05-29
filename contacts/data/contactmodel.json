@@ -1,0 +1,61 @@
+{
+ "datafile":"contacts/allcontacts.json",
+ "fields":{
+  "name":{
+   "type":"text",
+   "title":"Name",
+   "class":"name form-input",
+   "parentclass":"form-group",
+   "name":"name",
+   "placeholder":"Enter Name",
+   "require":"required",
+   "default":"about",
+   "value":"post_name",
+   "required":"required",
+   "validation":"alpha",
+   "error":"Invalid Name"
+  },
+  "email":{
+   "type":"email",
+   "title":"Email",
+   "parentclass":"form-group",
+   "class":"email form-input",
+   "name":"email",
+   "placeholder":"Enter Email ID",
+   "require":"required",
+   "default":"email",
+   "value":"post_email",
+   "required":"required",
+   "validation":"email",
+   "error":"Invalid Email Id"
+  },
+  "mobile":{
+   "type":"mobile",
+   "title":"Mobile",
+   "class":"mobile form-input",
+   "parentclass":"form-group",
+   "name":"mobile",
+   "placeholder":"Enter Mobile No",
+   "require":"required",
+   "default":"mobile",
+   "value":"post_mobile",
+   "required":"required",
+   "validation":"numeric",
+   "error":"Invalid Mobile No."
+  },
+  "address":{
+   "type":"textarea",
+   "title":"Address",
+   "class":"address form-input",
+   "parentclass":"form-group",
+   "name":"address",
+   "placeholder":"Enter Address",
+   "require":"required",
+   "default":"address",
+   "value":"post_address",
+   "required":"required",
+   "validation":"alphanemeric",
+   "error":"Invalid Address"
+  }
+ }
+}

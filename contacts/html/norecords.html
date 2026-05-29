@@ -1,0 +1,104 @@
+
+    <style>
+       
+
+        /* Empty State Container */
+        .empty-state-container {
+            text-align: center;
+            padding: 40px 24px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Icon / Illustration Wrapper */
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #f3f4f6;
+            color: #9ca3af;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px auto;
+        }
+
+        .empty-state-icon svg {
+            width: 40px;
+            height: 40px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.5;
+        }
+
+        /* Text Styles */
+        .empty-state-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-description {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 28px;
+        }
+
+        /* Action Button */
+        .empty-state-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2563eb;
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .empty-state-btn:hover {
+            background-color: #1d4ed8;
+        }
+        
+        .empty-state-btn svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+
+
+    <div class="empty-state-container">
+        <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                <line x1="9" y1="14" x2="15" y2="14"></line>
+            </svg>
+        </div>
+        
+        <h2 class="empty-state-title">No records found </h2>
+        <p class="empty-state-description">
+            We couldn't find any data matching your criteria. Try adjusting your filters or add a new record to get started.
+        </p>
+        
+        <button class="empty-state-btn add-btn" >
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add New Record
+        </button>
+    </div>

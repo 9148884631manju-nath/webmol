@@ -22,6 +22,177 @@ class WebMol{
   );
   }
  }
+ public function fieldsview($vars,$fields){
+  $xfld="";
+  foreach($vars as $kk=>$vv){
+    if($kk=="XformFields"){
+      $fld = explode(",",$vv);
+      $nvars[]=$kk;
+      for($i=0;$i<count($fld);$i+=1){
+        $attrs="";$attrx="";
+        if(isset($fields[$fld[$i]])){
+        foreach($fields[$fld[$i]] as $fk=>$fv){
+          if($fk=="title" or $fk=="titlecss"){}else{
+            if($fk=="value"){
+              $vex=explode("_",$fv);
+              if(count($vex)>1){
+                switch($vex[0]){
+                  case "post":
+                    $nw = str_replace($vex[0]."_","",$fv);
+                    if(isset($_POST[$nw])){
+                      $attrx.=$fk.'="'.$_POST[$nw].'" ';
+                    }else{
+                      $attrx.=$fk.'="" ';
+                    }
+                    break;
+                  default:
+                  break;
+                }
+              }
+              else{
+              $attrx.=$fk.'="'.$fv.'" ';  
+              }
+            }else{
+              if(is_array($fv)){$fv=implode(",",$fv);}
+              $attrx.=$fk.'="'.$fv.'" ';
+            }
+          }                  
+        }                
+        $attrs=$attrx;
+        
+        $inps = $this->form($this->con(),$fields,$fld,$i,$attrs);
+
+        if(isset($fields[$fld[$i]]['titlecss'])){$titlecss=$fields[$fld[$i]]['titlecss'];}else{$titlecss="";}
+        if(isset($fields[$fld[$i]]['parentcss'])){$parentcss=$fields[$fld[$i]]['parentcss'];}else{$parentcss="";}
+        if(isset($fields[$fld[$i]]['titlecss'])){$titlecss=$fields[$fld[$i]]['titlecss'];}else{$titlecss="";}
+        if(isset($fields[$fld[$i]]['errorcss'])){$errorcss=$fields[$fld[$i]]['errorcss'];}else{$errorcss="";}
+        $xfld.='<p class="'.$parentcss.'" ><b class="'.$titlecss.'" >'.$fields[$fld[$i]]['title'].'</b>'.$inps.'<i class="flderr '.$errorcss.' '.$fields[$fld[$i]]['name'].'_ierr">'.$fields[$fld[$i]]['error'].'</i></p>';
+        }else{}
+      }
+      $nvals[]=$xfld;
+    }else{
+      $nvars[] = $kk;
+      $nvals[] = $vv;
+    }
+    
+  }
+          return array("vars"=>$nvars,"vals"=>$nvals);
+ }
+ public function jsonform($model,$theme,$vars){
+  $res="";$tmod="yes";$tthm="yes";
+  
+  if(file_exists($theme)){
+  $thm = file_get_contents($theme);
+  }else{
+    $res.=" Theme Not Found ".$theme;
+    $tthm="";
+  }
+  if(file_exists($model)){
+  $modl = file_get_contents($model);
+  }else{
+    $res.=" Json DB Model not found ".$model;
+    $tmod="";$af="no";
+  }
+  if($tthm=="yes" and $tmod=="yes")
+    {
+      $md = json_decode($modl);
+      if(isset($md->datafile)){
+        $mfl = $md->datafile;
+        if(file_exists($mfl)){$af="yes";}else{
+          if(mkdir($mfl, 0777)){$af="yes";}else{
+            $res.=" Data Creation Error! check Folder permission ";
+          }
+        }
+        if($af=="yes")
+          {
+            if(isset($md->fields)){
+              $fields=array();
+              $raw_fields = $md->fields;
+              foreach($raw_fields as $kk=>$vv)
+                {
+                  foreach($vv as $ck=>$cv)
+                    {
+                      $fields[$kk][$ck]=$cv;
+                    }
+                }
+              $fres = $this->fieldsview($vars,$fields);
+              $nvars = $fres["vars"];
+              $nvals = $fres["vals"];
+              $res.=str_replace($nvars,$nvals,$thm);
+            }else{
+              $res.=" Set Data Fields ";
+            }
+          }
+      }else{
+        $res.=" Invalid Data Model ";
+      }
+      //$frm = $this->fieldsview($vars,$fields);
+    }
+  return $res;
+ }
+ 
+ public function jsonlist($for,$data,$keys,$theme,$errtheme,$ekeys){
+  $res="";
+  $tres="yes";
+  $dres="yes";
+  switch($for)
+  {
+    default:
+      if(file_exists($data)){
+        $edata = file_get_contents($data);
+        $jdata = json_decode($edata);
+              
+      }else{
+        $res.="Data Nor Found ".$data;
+        $dres="";
+      }
+    break;
+  }
+  if(file_exists($theme)){
+    $thm = file_get_contents($theme);
+  }else
+  {
+    $res.="Theme Not Found ".$theme;
+    $tres="";
+  }
+  
+  $typs=$this->getKeys($keys,0);
+  $vals=$this->getKeys($keys,1);
+  $vars=$this->getKeys($keys,2);
+  $defs=$this->getKeys($keys,3);
+  $exts=$this->getKeys($keys,4);
+  if($tres=="yes" and $dres=="yes")
+    {
+      $nval=array();
+      if(count($jdata)>0){
+        for($i=0;$i<count($jdata);$i+=1){
+          $jxdata = $jdata[$i];
+          foreach($jxdata as $k=>$v)
+            {
+              if(in_array($k,$vals)){
+                $nval[$i][] = $v;
+              }
+            }
+          $res.=str_replace($vars,$nval[$i],$thm);
+        }
+      }else{
+       
+        if(file_exists($errtheme)){
+          $ethm = file_get_contents($errtheme);
+           $etyps=$this->getKeys($ekeys,0);
+            $evals=$this->getKeys($ekeys,1);
+            $evars=$this->getKeys($ekeys,2);
+            $edefs=$this->getKeys($ekeys,3);
+            $eexts=$this->getKeys($ekeys,4);
+            $res.=str_replace($evars,$evals,$ethm);
+        }else
+        {
+          $res.="0 Records";
+        }
+      }
+   }
+  return $res;
+ }
  public function getKeys($ar,$v){
   $res=array();
   if(is_array($ar)){
@@ -334,7 +505,7 @@ class WebMol{
       $res='<img src="'.$v.'" alt="'.$v.'" longdesc="'.$v.'" />';
     }
     else{
-      $res='<img src="icons/'.$pinfo["extension"].'.png" alt="'.$v.'" longdesc="'.$v.'" /> <a href="'.$v.'">'.$pinfo["filename"].'</a>';
+      $res='<a href="'.$v.'"> <img src="icons/'.$pinfo["extension"].'.png" alt="'.$v.'" longdesc="'.$v.'" /> '.$pinfo["filename"].'</a>';
     }
     return $res;
  }

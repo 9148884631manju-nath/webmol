@@ -1,0 +1,281 @@
+
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        /* --- MODAL STYLES --- */
+        
+        /* The Modal Background Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Mobile-first: slides up from bottom */
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        /* When active, show the overlay */
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* The actual Popup Container */
+        .modal-box {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            padding: 24px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            transform: translateY(100%); /* Start hidden off-screen */
+            transition: transform 0.3s ease-out;
+            box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* When active, slide up into view */
+        .modal-overlay.active .modal-box {
+            transform: translateY(0);
+        }
+
+        /* Desktop Responsive Adjustment */
+        @media (min-width: 600px) {
+            .modal-overlay {
+                align-items: center; /* Center vertically on larger screens */
+            }
+            .modal-box {
+                border-radius: 12px;
+                transform: scale(0.9); /* Subtle pop scale animation */
+            }
+            .modal-overlay.active .modal-box {
+                transform: scale(1);
+            }
+        }
+
+        /* Modal Header elements */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .close-btn:hover {
+            color: #4b5563;
+        }
+
+        /* Sample Form Inside Modal */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Modal Actions Footer */
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-cancel {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e5e7eb;
+        }
+
+        .btn-submit {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+
+        .btn-submit:hover {
+            background-color: #1d4ed8;
+        }
+
+
+        /* --- BOTTOM NAV BAR STYLES (From previous prompt) --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 65px;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid #e5e7eb;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            text-decoration: none;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .nav-icon {
+            width: 24px; height: 24px;
+            margin-bottom: 4px;
+            stroke: currentColor; fill: none; stroke-width: 2;
+        }
+
+        .nav-item.add-btn .icon-wrapper {
+            background-color: #2563eb;
+            color: #ffffff;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            transform: translateY(-10px);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bottom Navigation Footer Bar -->
+    <nav class="bottom-nav">
+        <a href="#home" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+            <span>Home</span>
+        </a>
+
+        <!-- Add Button (Triggers Modal) -->
+        <div class="nav-item add-btn" id="openModalBtn">
+            <div class="icon-wrapper">
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </div>
+        </div>
+
+        <a href="#view" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path></svg>
+            <span>View</span>
+        </a>
+    </nav>
+
+
+    <!-- POPUP MODAL -->
+    
+
+    <!-- JAVASCRIPT FOR EVENT HANDLING -->
+    <script>
+        // Get DOM Elements
+        const modalOverlay = document.getElementById('modalOverlay');
+        const openModalBtn = document.querySelectorAll(".add-btn");//document.getElementById('openModalBtn');
+        const closeModalX = document.getElementById('closeModalX');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const addContactForm = document.getElementById('addContactForm');
+
+        // Function to open modal
+        function openModal() {
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevents background body scrolling
+        }
+
+        // Function to close modal
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = ''; // Restores background scrolling
+            addContactForm.reset(); // Resets form fields when closing
+        }
+
+        // Event Listeners
+        openModalBtn.forEach(btn => {
+            btn.addEventListener('click', openModal);    
+        });
+        
+        closeModalX.addEventListener('click', closeModal);
+        closeModalBtn.addEventListener('click', closeModal);
+
+        // Close modal if user clicks anywhere outside the white modal box
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        // Optional: Handle form submission 
+        addContactForm.addEventListener('submit', (e) => {
+            e.preventDefault(); 
+            alert('Contact Saved Successfully!'); 
+            closeModal();
+        });
+    </script>

@@ -1,0 +1,99 @@
+<style>
+       
+        /* Contact Card Container */
+        .contact-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Card Details Body */
+        .card-body {
+            padding: 20px;
+        }
+
+        .contact-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .contact-mobile {
+            font-size: 15px;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Subtle phone icon via CSS */
+        .contact-mobile::before {
+            content: "📞";
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        /* Actions Footer Section */
+        .card-actions {
+            display: flex;
+            background-color: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Individual Action Buttons */
+        .action-btn {
+            flex: 1;
+            text-align: center;
+            padding: 14px 0;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .action-btn:not(:last-child) {
+            border-right: 1px solid #e5e7eb;
+        }
+
+        /* Button Colors and Hover States */
+        .btn-view {
+            color: #2563eb; /* Blue */
+        }
+
+        .btn-view:hover {
+            background-color: #eff6ff;
+        }
+
+        .btn-edit {
+            color: #059669; /* Green */
+        }
+
+        .btn-edit:hover {
+            background-color: #ecfdf5;
+        }
+
+        .btn-delete {
+            color: #dc2626; /* Red */
+        }
+
+        .btn-delete:hover {
+            background-color: #fef2f2;
+        }
+    </style>
+<!-- Contact Card Start -->
+    <div class="contact-card">
+        <div class="card-body">
+            <h2 class="contact-name">Xname</h2>
+            <p class="contact-mobile">Xmobile</p>
+        </div>
+        
+        <div class="card-actions">
+            <a href="#Xmobile" class="action-btn btn-view">View More</a>
+            <a href="#Xmobile" class="action-btn btn-edit">Edit</a>
+            <a href="#Xmobile" class="action-btn btn-delete">Delete</a>
+        </div>
+    </div>
+    <!-- Contact Card End -->
