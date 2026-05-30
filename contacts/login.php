@@ -8,9 +8,22 @@ $theme = $wm->html([
 );
 echo $theme;
 
-$jsonList = $wm->jsonlist(
+$xjsonList = $wm->jsonlist(
  "self",
  "contacts/data/allcontacts.json",
+ [
+  ["txt","name","Xname","",""],
+  ["txt","mobile","Xmobile","",""]
+ ],
+ "contacts/html/view_edit_delete_list.html",
+ "contacts/html/norecords.html",
+[
+ ["txt","?page=contacts/addnew","Xlink","",""]
+]
+);
+$jsonList = $wm->jsonlist(
+ "folder",
+ "contacts/data/allcontacts/",
  [
   ["txt","name","Xname","",""],
   ["txt","mobile","Xmobile","",""]
@@ -29,7 +42,7 @@ $form = $wm->jsonform(
  array(
   "XformTitle"=>"Add New Contact", # Title of the Form
   "XformDescprtion"=>"Add Users to the Json Database", # Description the Form
-  "XformUrl"=>"?page=mediok/brands&for=add-data", # Form Action URL
+  "XformUrl"=>"?code=raw&page=contacts/logincode", # Form Action URL
   "XformName"=>"addform", # Form Name
   "XformClass"=>"addform",# FOrm Class Name
   "XbtnText"=>"Save Contact", # Form Submit Button Text

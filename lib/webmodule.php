@@ -130,18 +130,147 @@ class WebMol{
     }
   return $res;
  }
- 
+ public function jsontoarray($js){
+  $res=array();
+  foreach($js as $k=>$v){
+    foreach($v as $kk=>$vv){
+      $res[$k][$kk]=$vv;
+    }
+  }
+  return $res;
+ }
+ public function writetxtfile($myfile,$ndata)
+	{
+		$fo = fopen($myfile,"w");
+		fwrite($fo,$ndata);
+		fclose($fo);
+	}
+ public function read_file($f)
+	{
+		$fd="";
+		if($f=="")
+		{
+			$fd= "PLEASE MENTION FILE NAME! ".$f;
+		}
+		else
+		{
+			if(file_exists($f))
+			{
+				$fo = fopen($f,"r"); 
+				if($fo)
+					{
+						while(!feof($fo))
+							{
+								$fd.=rtrim(fgets($fo));
+							}
+						
+					}
+					else
+					{
+						$fd= "FILE READ ERROR! ".$f;
+					}
+			}
+			else
+			{
+				$fd= "FILE NOT FOUND! - ".$f;
+			}
+		}
+		return $fd;
+	}
+  public function getjsondata($desti,$fldc,$fldc_data){
+    $res=array("0",array(""));
+    $sd = scandir($desti);
+    for($i=2;$i<count($sd);$i+=1){
+      $fd = $this->read_file($desti.$sd[$i]);
+      $fdj = json_decode($fd);
+      foreach($fdj as $k=>$v){
+        if(in_array($k,$fldc)){
+          if(in_array($v,$fldc_data)){
+            $res[0]="1";
+            $res[1][$k]=$v;
+          }
+        }
+      }
+    }
+    return $res;
+  }
+ public function jsoninsert($for,$desti,$jsfile,$check,$fldcheck,$fields,$data,$suc,$err,$show){
+  $res="";
+  $fld = explode(",",$fields);
+  $ndata = array();
+  $fom = file_get_contents($jsfile);
+  $fom=json_decode($fom);
+  $form = $this->jsontoarray($fom->fields);
+  $fldc=explode(",",$fldcheck);
+  $fldc_data=array();
+  $cs="";$xerr="";$ldata="";
+  $sd = scandir($desti);$csd=count($sd)-2;
+  for($i=0;$i<count($fld);$i+=1)
+    {
+      $ndata[$i] = $this->dataValidation($form,$fld[$i],$data[$i]);
+      $cs.= $ndata[$i][0];
+      $xerr.= $ndata[$i][1];
+      $ldata.= '"'.$fld[$i].'":"'.$ndata[$i][2].'",';
+      if(in_array($fld[$i],$fldc)){$fldc_data[]=$ndata[$i][2];}
+    }
+  if($xerr==""){
+
+    $id = '"id":"'.$check."_".date("YmdHis").'",';
+    $fname = $check.".json";
+    $fin_data="{".$id.substr($ldata,0,-1)."}";
+    if($show=="yes"){$res= $fin_data;}
+    $fin_data_dec = json_decode($fin_data);
+
+    if($csd>0){
+      $getdata = $this->getjsondata($desti,$fldc,$fldc_data);
+      if(in_array($fname,$sd) or $getdata[0]=="1"){
+        $res.="Data Exists ";
+        foreach($getdata[1] as $vk=>$vd){
+          $res.=$vd.", ";
+        }
+      }else{
+        $res=$this->writetxtfile($desti.$fname,$fin_data);
+        $res.=$suc;
+      }
+    }else{
+      $res=$this->writetxtfile($desti.$fname,$fin_data);
+      $res.=$suc;
+    }
+    $res.="<style>".$cs."</style>";
+  }else{
+    $res.=$err." Form Error! <style>".$cs."</style>";
+  }  
+  return $res;
+ }
  public function jsonlist($for,$data,$keys,$theme,$errtheme,$ekeys){
   $res="";
   $tres="yes";
   $dres="yes";
   switch($for)
   {
+    case "folder":
+      if(file_exists($data)){
+        $edata=array();
+        $sd = scandir($data);
+        for($i=2;$i<count($sd);$i+=1){
+          $pinf = pathinfo($sd[$i]);
+          if(isset($pinf["extension"])=="json"){
+            $edata[]=json_decode(file_get_contents($data.$pinf["basename"]));
+          }else{
+          }
+        }
+        $edata = json_encode($edata);
+        $jdata = json_decode($edata);
+              
+      }else{
+        $res.="Data Nor Found ".$data;
+        $dres="";
+      }
+      break;
     default:
       if(file_exists($data)){
         $edata = file_get_contents($data);
-        $jdata = json_decode($edata);
-              
+        $jdata = json_decode($edata);              
       }else{
         $res.="Data Nor Found ".$data;
         $dres="";
@@ -274,33 +403,38 @@ class WebMol{
     $ndata="";
   switch($vx)
   {
+    case "htmlcontent":
+      $ndata=htmlentities($chk["value"]);
+      $errd="";
+      $cs=".".$vxn."{display:none;color:#000;}";
+      break;
     case "alphanumeric": 
-      if($chk[$vx]===1){$cr="";}else{$cr="0";
-      $cs=".".$vxn."{display:block;}";}
+      if($chk[$vx]===1){$cr=""; $cs=".".$vxn."{display:none;color:#000;}"; }else{$cr="0";
+      $cs=".".$vxn."{display:block;color:#f20;font-weight:bold;}";}
       $errd=$cr;
       $ndata=$chk["value"];
       break;
     case "alpha":
-      if($chk[$vx]===1){$cr="";}else{$cr="0";
-      $cs=".".$vxn."{display:block;}";}
+      if($chk[$vx]===1){$cr=""; $cs=".".$vxn."{display:none;color:#000;}"; }else{$cr="0";
+      $cs=".".$vxn."{display:block;color:#f20;font-weight:bold;}";}
       $errd=$cr;
       $ndata=$chk["value"];
       break;
     case "email":
-      if($chk["atpos"]>-1 and $chk["dotpos"]>-1){$cr="";}else{$cr="0";
-      $cs=".".$vxn."{display:block;}";}
+      if($chk["atpos"]>-1 and $chk["dotpos"]>-1){$cr=""; $cs=".".$vxn."{display:none;color:#000;}"; }else{$cr="0";
+      $cs=".".$vxn."{display:block;color:#f20;font-weight:bold;}";}
       $errd=$cr;
       $ndata=$chk["value"];
       break;
     case "numberlimit":
-      if($chk["isnumber"]===true and $chk["strlen"]===(int)$vxl){$cr="";}else{$cr="0";
-      $cs=".".$vxn."{display:block;}";}
+      if($chk["isnumber"]===true and $chk["strlen"]===(int)$vxl){$cr=""; $cs=".".$vxn."{display:none;color:#000;}"; }else{$cr="0";
+      $cs=".".$vxn."{display:block;color:#f20;font-weight:bold;}";}
       $errd=$cr;
       $ndata=$chk["value"];
       break;
     case "number":
-      if($chk["isnumber"]===true){$cr="";}else{$cr="0";
-      $cs=".".$vxn."{display:block;}";}
+      if($chk["isnumber"]===true){$cr=""; $cs=".".$vxn."{display:none;color:#000;}"; }else{$cr="0";
+      $cs=".".$vxn."{display:block;color:#f20;font-weight:bold;}";}
       $errd=$cr;
       $ndata=$chk["value"];
       break;

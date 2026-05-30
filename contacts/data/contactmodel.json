@@ -40,7 +40,7 @@
    "default":"mobile",
    "value":"post_mobile",
    "required":"required",
-   "validation":"numeric",
+   "validation":"number",
    "error":"Invalid Mobile No."
   },
   "address":{
@@ -54,7 +54,7 @@
    "default":"address",
    "value":"post_address",
    "required":"required",
-   "validation":"alphanemeric",
+   "validation":"htmlcontent",
    "error":"Invalid Address"
   }
  }

@@ -9,9 +9,14 @@
             </div>
             XformDescprtion
             <!-- Modal Body (Form Context) -->
-            <form id="addContactForm" class="XformClass" name="XformName" method="post" action="XformUrl">
+            <form id="addContactForm" class="XformClass" name="XformName" method="post" 
+            hx-post="XformUrl" 
+            hx-target="#response-message" 
+            hx-swap="innerHTML"
+            >
     XformFields
     <!-- Modal Actions -->
+     <div id="response-message" class="ress"></div>
     <div class="modal-footer">
         <button type="button" class="btn btn-cancel" id="closeModalBtn">Cancel</button>
         <button type="submit" class="btn btn-submit">XbtnText</button>
