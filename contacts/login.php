@@ -10,10 +10,14 @@ echo $theme;
 
 $xjsonList = $wm->jsonlist(
  "self",
+ "",
  "contacts/data/allcontacts.json",
  [
   ["txt","name","Xname","",""],
   ["txt","mobile","Xmobile","",""]
+ ],
+ [
+  []
  ],
  "contacts/html/view_edit_delete_list.html",
  "contacts/html/norecords.html",
@@ -23,10 +27,16 @@ $xjsonList = $wm->jsonlist(
 );
 $jsonList = $wm->jsonlist(
  "folder",
+ "",
  "contacts/data/allcontacts/",
  [
   ["txt","name","Xname","",""],
   ["txt","mobile","Xmobile","",""]
+ ],
+ [
+  ["txt","?page=contacts/viewcontact&mobile=Xmobile","XVLink","",""],
+  ["txt","?page=contacts/editcontact&mobile=Xmobile","XELink","",""],
+  ["txt","?page=contacts/deletecontact&mobile=Xmobile","XDLink","",""]
  ],
  "contacts/html/view_edit_delete_list.html",
  "contacts/html/norecords.html",

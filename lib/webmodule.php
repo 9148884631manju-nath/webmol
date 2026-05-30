@@ -224,7 +224,7 @@ class WebMol{
     if($csd>0){
       $getdata = $this->getjsondata($desti,$fldc,$fldc_data);
       if(in_array($fname,$sd) or $getdata[0]=="1"){
-        $res.="Data Exists ";
+        $res.="Data Exists ".$check." ";
         foreach($getdata[1] as $vk=>$vd){
           $res.=$vd.", ";
         }
@@ -242,23 +242,35 @@ class WebMol{
   }  
   return $res;
  }
- public function jsonlist($for,$data,$keys,$theme,$errtheme,$ekeys){
+ public function jsonlist($for,$filename,$data,$keys,$adkeys,$theme,$errtheme,$ekeys){
   $res="";
   $tres="yes";
   $dres="yes";
   switch($for)
   {
+    case "folder_viewdata":
+      $vdata=$data.$filename.".json";
+      if($filename=="" or !file_exists($vdata)){
+        $res.="Data Nor Found ".$data;
+        $dres="";
+      }
+      else{
+        $edata[]=json_decode(file_get_contents($vdata));
+        $edata = json_encode($edata);
+        $jdata = json_decode($edata);
+      }
+      break;
     case "folder":
       if(file_exists($data)){
         $edata=array();
         $sd = scandir($data);
         for($i=2;$i<count($sd);$i+=1){
-          $pinf = pathinfo($sd[$i]);
+          $pinf = pathinfo($sd[$i]);          
           if(isset($pinf["extension"])=="json"){
             $edata[]=json_decode(file_get_contents($data.$pinf["basename"]));
-          }else{
           }
         }
+        
         $edata = json_encode($edata);
         $jdata = json_decode($edata);
               
@@ -290,6 +302,13 @@ class WebMol{
   $vars=$this->getKeys($keys,2);
   $defs=$this->getKeys($keys,3);
   $exts=$this->getKeys($keys,4);
+
+  $adtyps=$this->getKeys($adkeys,0);
+  $advals=$this->getKeys($adkeys,1);
+  $advars=$this->getKeys($adkeys,2);
+  $addefs=$this->getKeys($adkeys,3);
+  $adexts=$this->getKeys($adkeys,4);
+
   if($tres=="yes" and $dres=="yes")
     {
       $nval=array();
@@ -302,7 +321,7 @@ class WebMol{
                 $nval[$i][] = $v;
               }
             }
-          $res.=str_replace($vars,$nval[$i],$thm);
+          $res.=str_replace($vars,$nval[$i],str_replace($advars,$advals,$thm));
         }
       }else{
        
